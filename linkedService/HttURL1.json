@@ -1,0 +1,13 @@
+{
+	"name": "HttURL1",
+	"properties": {
+		"annotations": [],
+		"type": "HttpServer",
+		"typeProperties": {
+			"url": "https://eoyom2mvl1v1041.m.pipedream.net",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	},
+	"input": "FromLinkedService"
+}
