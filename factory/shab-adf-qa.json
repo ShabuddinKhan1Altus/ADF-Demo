@@ -1,0 +1,9 @@
+{
+	"name": "shab-adf-qa",
+	"location": "northeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "4ea05ea5-c304-454b-9da8-812293be0961",
+		"tenantId": "ac9fa6b2-8f69-4a07-9906-ffece1796978"
+	}
+}
