@@ -1,0 +1,29 @@
+{
+	"name": "feature-1-pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://eoyom2mvl1v1041.m.pipedream.net",
+					"connectVia": {
+						"referenceName": "feature-1-IR",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "GET"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
