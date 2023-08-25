@@ -4,6 +4,9 @@
 	"parameters": {
 		"factoryName": {
 			"value": "shab-adf-qa"
+		},
+		"HttpServer1_properties_typeProperties_url": {
+			"value": "https://eoyom2mvl1v1041.m.pipedream.net"
 		}
 	}
 }
