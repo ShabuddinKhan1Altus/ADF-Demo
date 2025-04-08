@@ -19,7 +19,7 @@ jobs:
  
       - name: Gather Full Code From Changed Files
         run: |
-          CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+          CHANGED_FILES=$(git diff --name-only origin/develop...HEAD)
           echo '{"original files": [' > original_files_temp.json
           for file in $CHANGED_FILES; do
             if [[ $file == *.json ]] || [[ $file == *.png ]]; then
@@ -38,7 +38,7 @@ jobs:
  
       - name: Get Diff
         run: |
-          git diff origin/main...HEAD \
+          git diff origin/develop...HEAD \
             | grep '^[+-]' \
             | grep -Ev '^(---|\+\+\+)' > code_changes_only.txt
           jq -Rs '{diff: .}' code_changes_only.txt > diff.json
@@ -99,8 +99,8 @@ jobs:
  
       - name: Gather Full Code From Changed Files
         run: |
-          # Identify changed files from the base (origin/main) to the pull request HEAD
-          CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+          # Identify changed files from the base (origin/develop) to the pull request HEAD
+          CHANGED_FILES=$(git diff --name-only origin/develop...HEAD)
  
           # Build a JSON array containing filenames and their content
           echo '{"original files": [' > original_files_temp.json
