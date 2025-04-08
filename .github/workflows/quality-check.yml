@@ -19,8 +19,9 @@ jobs:
 
       - name: Gather Full Code From Changed Files
         run: |
-          # List changed files from origin/develop to HEAD
-          CHANGED_FILES=$(git diff --name-only origin/develop...HEAD)
+          set -e  # Exit on error
+          # List changed files from origin/develop to HEAD, excluding deleted files
+          CHANGED_FILES=$(git diff --name-only --diff-filter=ACM origin/develop...HEAD)
           # Build a JSON object containing the original files
           echo '{"original files": [' > original_files_temp.json
           for file in $CHANGED_FILES; do
@@ -28,24 +29,21 @@ jobs:
             if [[ $file == *.json ]] || [[ $file == *.png ]]; then
               continue
             fi
-            # If the file still exists (hasn't been deleted/renamed), capture its contents
-            if [ -f "$file" ]; then
-              CONTENT=$(jq -Rs . < "$file")
-              echo "{\"filename\": \"$file\", \"content\": $CONTENT}," >> original_files_temp.json
-            fi
+            # Capture file contents
+            CONTENT=$(jq -Rs . < "$file")
+            echo "{\"filename\": \"$file\", \"content\": $CONTENT}," >> original_files_temp.json
           done
           # Remove the trailing comma from the last file entry
           sed -i '$ s/,$//' original_files_temp.json
           echo "]}" >> original_files_temp.json
-          # Temporarily store original files JSON for merging later
+
       - name: Display Processed Diff (Debug)
         run: cat original_files_temp.json
 
       - name: Get Diff
         run: |
-          # Extract the diff from origin/develop to HEAD.
-          # Filter lines starting with '+' or '-' to focus on actual code changes only.
-          # Exclude lines that are diff metadata like +++, ---.
+          set -e  # Exit on error
+          # Extract the diff from origin/develop to HEAD, excluding metadata lines
           git diff origin/develop...HEAD \
             | grep '^[+-]' \
             | grep -Ev '^(---|\+\+\+)' > code_changes_only.txt
@@ -56,6 +54,7 @@ jobs:
             jq -s '.[0] * .[1]' diff.json original_files_temp.json > combined.json
             mv combined.json diff.json
           fi
+
       - name: Display Processed Diff (Debug)
         run: cat diff.json
 
@@ -138,29 +137,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # ensures we get both PR base and head
+          fetch-depth: 0  # Ensures we have both PR base and head
   
       - name: Gather Full Code From Changed Files
         run: |
-          # Identify changed files from the base (origin/develop) to the pull request HEAD
-          CHANGED_FILES=$(git diff --name-only origin/develop...HEAD)
-  
-          # Build a JSON array containing filenames and their content
+          set -e  # Exit on error
+          # List changed files from origin/develop to HEAD, excluding deleted files
+          CHANGED_FILES=$(git diff --name-only --diff-filter=ACM origin/develop...HEAD)
+          # Build a JSON object containing the original files
           echo '{"original files": [' > original_files_temp.json
           for file in $CHANGED_FILES; do
             # Skip .json and .txt files
             if [[ $file == *.json ]] || [[ $file == *.txt ]]; then
               continue
             fi
-  
-            # If the file still exists (i.e., wasn't deleted)
-            if [ -f "$file" ]; then
-              CONTENT=$(jq -Rs . < "$file")
-              echo "{\"filename\": \"$file\", \"content\": $CONTENT}," >> original_files_temp.json
-            fi
+            # Capture file contents
+            CONTENT=$(jq -Rs . < "$file")
+            echo "{\"filename\": \"$file\", \"content\": $CONTENT}," >> original_files_temp.json
           done
-  
-          # Remove trailing comma on the last file entry and close JSON
+          # Remove the trailing comma from the last file entry
           sed -i '$ s/,$//' original_files_temp.json
           echo "]}" >> original_files_temp.json
   
