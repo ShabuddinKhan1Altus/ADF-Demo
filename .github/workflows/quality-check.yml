@@ -37,25 +37,39 @@ jobs:
         run: cat original_files_temp.json
  
       - name: Get Diff
+        # Extract the differences between the base branch and the current branch
         run: |
+          # Generate a diff of code changes, excluding metadata lines
           git diff origin/develop...HEAD \
             | grep '^[+-]' \
             | grep -Ev '^(---|\+\+\+)' > code_changes_only.txt
+
+          # Convert the diff into a JSON object
           jq -Rs '{diff: .}' code_changes_only.txt > diff.json
+
+          # If original files JSON exists, merge it with the diff JSON
           if [ -f original_files_temp.json ]; then
             jq -s '.[0] * .[1]' diff.json original_files_temp.json > combined.json
             mv combined.json diff.json
- 
+          fi
+
       - name: Display Processed Diff (Debug)
+        # Output the combined diff JSON for debugging purposes
         run: cat diff.json
- 
+
       - name: Analyze with OpenAI
+        # Use OpenAI to analyze the code changes for quality and security issues
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
+          # Extract the diff and original files content from the JSON
           DIFF_CONTENT=$(jq -r '.diff' diff.json)
           ORIGINAL_FILES=$(jq -r '."original files"' diff.json)
+
+          # Construct the prompt for OpenAI
           PROMPT="Please review the following code changes for any obvious quality or security issues. Provide a brief report in markdown format:\n\nDIFF:\n${DIFF_CONTENT}\n\nORIGINAL FILES:\n${ORIGINAL_FILES}"
+
+          # Create a JSON request for OpenAI
           jq -n --arg prompt "$PROMPT" '{
           "model":"o3-mini",
           "reasoning":{"effort": "medium"},
@@ -64,13 +78,16 @@ jobs:
               { "role": "user", "content": $prompt }
             ]
           }' > request.json
+
+          # Send the request to OpenAI and save the response
           curl -sS https://api.openai.com/v1/chat/completions \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${OPENAI_API_KEY}" \
             -d @request.json > response.json
- 
+
       - name: Extract Review Message
         id: extract_message
+        # Extract the review message from the OpenAI response
         run: |
           ASSISTANT_MSG=$(jq -r '.choices[0].message.content' response.json)
           {
