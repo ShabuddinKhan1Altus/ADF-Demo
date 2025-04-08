@@ -79,7 +79,7 @@ jobs:
             "model": "o1-mini",
             "messages": [
               {
-                "role": "system",
+                "role": "developer",
                 "content": $system_content
               },
               {
