@@ -76,7 +76,7 @@ jobs:
     
           # Create the request.json with the system and user messages
           jq -n --arg prompt "$PROMPT" --arg system_content "$SYSTEM_CONTENT" '{
-            "model": "o3-mini",
+            "model": "gpt-4o",
             "reasoning_effort": "high",
             "messages": [
               {
