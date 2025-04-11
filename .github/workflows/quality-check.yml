@@ -81,9 +81,9 @@ jobs:
           # Create the request.json with the system and user messages
           jq -n --arg prompt "$PROMPT" --arg system_content "$SYSTEM_CONTENT" '{
             "model": "gpt-4o-mini",
-            "temperature": "0.7",
-            "top_p": "0.95",
-            "max_tokens": "800",
+            "temperature": 0.7,
+            "top_p": 0.95,
+            "max_tokens": 800,
             "messages": [
               {
                 "role": "system",
@@ -210,6 +210,9 @@ jobs:
                 --arg user_content "$PROMPT" \
           '{
             "model":"gpt-4o-mini",
+            "temperature": 0.7,
+            "top_p": 0.95,
+            "max_tokens": 800,            
             "messages": [
               {
                 "role": "system",
