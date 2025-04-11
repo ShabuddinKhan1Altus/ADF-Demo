@@ -92,7 +92,7 @@ jobs:
               {
                 "role": "user",
                 "content": $prompt
-              },
+              }
             ]
           }' > request.json
     
