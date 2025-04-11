@@ -1,5 +1,5 @@
 {
-	"name": "HttpServer1",
+	"name": "HttpServer",
 	"properties": {
 		"annotations": [],
 		"type": "HttpServer",
