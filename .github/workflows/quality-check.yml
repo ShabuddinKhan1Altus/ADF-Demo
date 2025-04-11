@@ -64,7 +64,8 @@ jobs:
 
       - name: Analyze with OpenAI
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}        
+          # OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           set -e  # Stop execution on any error
           # Extract the diff and original files from diff.json
@@ -96,10 +97,16 @@ jobs:
           cat request.json
     
           # Send request to OpenAI
-          curl -sS https://api.openai.com/v1/chat/completions \
+          
+          curl -sS https://mashaopenai.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-02-15-preview \
             -H "Content-Type: application/json" \
-            -H "Authorization: Bearer ${OPENAI_API_KEY}" \
+            -H "Authorization: Bearer $AZURE_OPENAI_API_KEY" \
             -d @request.json > response.json
+          
+          # curl -sS https://api.openai.com/v1/chat/completions \
+          #   -H "Content-Type: application/json" \
+          #   -H "Authorization: Bearer ${OPENAI_API_KEY}" \
+          #   -d @request.json > response.json
     
           # Check if response.json was created and contains valid data
           if [ ! -s response.json ]; then
@@ -213,10 +220,15 @@ jobs:
           }' > request.json
   
           # Make the API call
-          curl -sS https://api.openai.com/v1/chat/completions \
+          curl -sS https://mashaopenai.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-02-15-preview \
             -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $OPENAI_API_KEY" \
+            -H "Authorization: Bearer $AZURE_OPENAI_API_KEY" \
             -d @request.json > response.json
+            
+          # curl -sS https://api.openai.com/v1/chat/completions \
+          #   -H "Content-Type: application/json" \
+          #   -H "Authorization: Bearer $OPENAI_API_KEY" \
+          #   -d @request.json > response.json
   
           # Extract the model's message
           ASSISTANT_MSG=$(jq -r '.choices[0].message.content' response.json)
