@@ -64,8 +64,8 @@ jobs:
 
       - name: Analyze with OpenAI
         env:
-          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}        
-          # OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}        
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           set -e  # Stop execution on any error
           # Extract the diff and original files from diff.json
@@ -178,6 +178,7 @@ jobs:
       - name: Analyze Code Against Best Practices
         id: validate
         env:
+        # AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}    
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           set -e
