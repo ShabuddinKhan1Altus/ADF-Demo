@@ -65,7 +65,7 @@ jobs:
       - name: Analyze with OpenAI
         env:
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}        
-          # OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           set -e  # Stop execution on any error
           # Extract the diff and original files from diff.json
@@ -139,6 +139,7 @@ jobs:
           gh api \
             repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
             -f body="$COMMENT"
+
   enterprise-standard-check:
     runs-on: ubuntu-latest
     needs: [code-analysis]
@@ -177,6 +178,7 @@ jobs:
       - name: Analyze Code Against Best Practices
         id: validate
         env:
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}    
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           set -e
@@ -187,6 +189,7 @@ jobs:
           #  - Summarize each best-practice category
           #  - Provide a rating for each category: 'extraordinary', 'acceptable', or 'poor'
           #  - Return a Markdown table titled 'Enterprise Standards'
+
           PROMPT="You are an Enterprise Code Assistant. Review each code snippet below for its adherence to the following categories: 
           1) Code Style & Formatting
           2) Security & Compliance
@@ -220,6 +223,7 @@ jobs:
           }' > request.json
   
           # Make the API call
+
           curl -sS https://mashaopenai.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-02-15-preview \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $AZURE_OPENAI_API_KEY" \

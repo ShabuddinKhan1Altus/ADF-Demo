@@ -1,5 +1,5 @@
 {
-	"name": "feature_1_dataset",
+	"name": "feature_2_dataset",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "HttpServer1",
